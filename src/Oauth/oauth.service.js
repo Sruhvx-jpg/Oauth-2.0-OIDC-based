@@ -19,7 +19,7 @@ class OauthService{
 
             return this.metadata
         } catch (error) {
-            throw apiError.EPE
+            throw apiError.EPE()
         }
     }
 
@@ -34,27 +34,27 @@ class OauthService{
             prompt: 'consent'
         })
 
-        return `${endpoints.auth}?&${params}`
+        return `${endpoints.auth}?${params}`
     }
 
     async tokenExchange(tempToken) {
-        const endpoints = this.getEndPoints();
+        const endpoints = await this.getEndPoints();
 
         const response = await axios.post(endpoints.token, {
             client_id: process.env.CLIENT_ID,
             client_secret: process.env.client_secret,
             grant_type: "authorization_code",
             redirect_uri: process.env.REDIRECT_URI,
-            tempToken
+            code: tempToken
         })
 
         return response.data
     }
 
     async getUserData(accessToken) {
-        const endpoints = this.getEndPoints()
+        const endpoints = await this.getEndPoints()
         const response = await axios.get(endpoints.userInfo, {
-            headers: { Authorization: `Bearer: ${accessToken}`}
+            headers: { Authorization: `Bearer ${accessToken}`}
         })
 
         return response.data
