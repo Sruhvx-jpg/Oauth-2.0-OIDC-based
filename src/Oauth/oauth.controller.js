@@ -24,7 +24,9 @@ const handlCallBck = async (req, res, next) => {
 
         const token = await oauthService.tokenExchange(code)
         const user = await oauthService.getUserData(token.access_token)
+
+        return new apiRes(res, 200, "login successfull", {user })
     } catch (error) {
-        
+        next(error)
     }
 }

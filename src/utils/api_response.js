@@ -1,6 +1,6 @@
 class apiRes {
-    constructor(res, status = "200",message = "successfull", data){
-        return res.status(status).json({
+    constructor(res, statusCode = 200,message = "successfull", data){
+        return res.status(statusCode).json({
             message,
             data,
             success : true

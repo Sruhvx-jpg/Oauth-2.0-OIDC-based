@@ -10,7 +10,15 @@ class apiError extends Error {
 
     static EPE(message = "Endpoint fetching error"){
     return new apiError(404, message)
-} 
+    }
+
+    static provideError(message = "provider error"){
+        return new apiError(400, message)
+    }
+
+    static authCodeMissing(message = "auth code missing"){
+        return new apiError(400, message)
+    }
 }
 
 export default apiError
