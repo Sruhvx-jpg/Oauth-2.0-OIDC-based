@@ -1,5 +1,6 @@
 import axios from "axios"
 import apiError from "../utils/api_error"
+import crypto from "crypto";
 
 class OauthService{
     constructor(){
@@ -23,7 +24,11 @@ class OauthService{
         }
     }
 
-    async generateAuthUrl(){
+    generateState() {
+        return crypto.randomBytes(32).toString("hex")
+    }
+
+    async generateAuthUrl(state){
         const endpoints = await this.getEndPoints()
         const params =  new URLSearchParams({
             client_id: process.env.CLIENT_ID,
@@ -31,24 +36,36 @@ class OauthService{
             response_type: 'code',
             scope: 'openid email profile',
             access_type: 'offline',
-            prompt: 'consent'
+            prompt: 'consent',
+            state: state
         })
 
         return `${endpoints.auth}?${params}`
     }
 
     async tokenExchange(tempToken) {
+    try {
         const endpoints = await this.getEndPoints();
-
-        const response = await axios.post(endpoints.token, {
+        const payload =  {
             client_id: process.env.CLIENT_ID,
             client_secret: process.env.CLIENT_SECRET,
             grant_type: "authorization_code",
             redirect_uri: process.env.REDIRECT_URI,
             code: tempToken
-        })
+        }
+
+        const response = await axios.post(
+            endpoints.token,  
+            new URLSearchParams(payload),
+            {
+                headers: { "Content-Type": "application/x-www-form-urlencoded" }
+            }
+        )
 
         return response.data
+    } catch (error) {
+            throw new apiError(502, "token exchange failed")
+        }
     }
 
     async getUserData(accessToken) {

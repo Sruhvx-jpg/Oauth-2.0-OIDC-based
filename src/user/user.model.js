@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
 userSchema.statics.findOrCreateUser = async function(userData) {
     const {sub ,email , name, picture} = userData
 
-    let user = await this.findOne({email})
+    let user = await this.findOne({providerId: sub ,email})
 
     if(!user) {
         user =  await this.create({providerId: sub ,email , name, picture})

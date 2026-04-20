@@ -19,6 +19,10 @@ class apiError extends Error {
     static authCodeMissing(message = "auth code missing"){
         return new apiError(400, message)
     }
+
+    static invalidState(message = "Invalida state - suspicisous state detected"){
+        return new apiError(400, message)
+    }
 }
 
 export default apiError
